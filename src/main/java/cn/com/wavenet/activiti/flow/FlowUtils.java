@@ -49,7 +49,7 @@ public class FlowUtils {
 	public void finishWork(String processId,String currentRole,String nextRole,String nextNodeId,Map<String,Object> conditionMap){
    	 ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
      TaskService taskService = processEngine.getTaskService();
-		Task task = taskService.createTaskQuery().processInstanceId(processId).taskCandidateGroup(currentRole).singleResult();
+		Task task = taskService.createTaskQuery().processInstanceId(processId).taskCandidateGroup(currentRole).singleResult();//首先查询当前流程实例下该角色是否有任务，有任务肯定也是唯一的
         if(task!=null){
 	    		 String [] candidateUsers={nextRole};
 	    		 taskService.setVariable(task.getId(), nextNodeId,  Arrays.asList(candidateUsers));

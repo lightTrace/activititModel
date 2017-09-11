@@ -16,10 +16,10 @@
 <bean id="identityService" factory-bean="processEngine" factory-method="getIdentityService" />     
 
 <bean id="processEngineConfiguration" class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration">  
-    <property name="jdbcUrl" value="jdbc:oracle:thin:@172.18.1.154:1521:orakp"/>  
-    <property name="jdbcDriver" value="oracle.jdbc.OracleDriver" />  
-    <property name="jdbcUsername" value="benevolent" />  
-    <property name="jdbcPassword" value="benevolent" />  
+    <property name="jdbcUrl" value="你的数据源url"/>  
+    <property name="jdbcDriver" value="你的数据源驱动" />  
+    <property name="jdbcUsername" value="你的数据源账号" />  
+    <property name="jdbcPassword" value="你的数据源密码" />  
    
     <property name="databaseSchemaUpdate" value="true" />  
    

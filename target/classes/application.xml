@@ -25,10 +25,9 @@
 		<property name="targetDataSources">
 			<map key-type="java.lang.String">
 				<entry key="jdbc154" value-ref="jdbc154" />
-				<entry key="jdbc252" value-ref="jdbc252" />
 			</map>
 		</property>
-		<property name="defaultTargetDataSource" ref="jdbc252" />
+		<property name="defaultTargetDataSource" ref="jdbc154" />
 	</bean>
 
 	<bean id="jdbc154" class="org.apache.commons.dbcp.BasicDataSource"
@@ -49,24 +48,7 @@
 		<property name="maxWait" value="${maxWait}"></property>
 	</bean>
 
-	<bean id="jdbc252" class="org.apache.commons.dbcp.BasicDataSource"
-		destroy-method="close">
-		<property name="driverClassName" value="${jdbc252.driver}" />
-		<property name="url" value="${jdbc252.jdbcUrl}" />
-		<property name="username" value="${jdbc252.user}" />
-		<property name="password" value="${jdbc252.password}" />
-		<!-- 初始化连接大小 -->
-		<property name="initialSize" value="${initialSize}"></property>
-		<!-- 连接池最大数量 -->
-		<property name="maxActive" value="${maxActive}"></property>
-		<!-- 连接池最大空闲 -->
-		<property name="maxIdle" value="${maxIdle}"></property>
-		<!-- 连接池最小空闲 -->
-		<property name="minIdle" value="${minIdle}"></property>
-		<!-- 获取连接最大等待时间 -->
-		<property name="maxWait" value="${maxWait}"></property>
-	</bean>
-	
+
 
 	<!-- JDBC模板定义 -->
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
