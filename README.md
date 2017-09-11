@@ -26,7 +26,8 @@ activiti 后台可配置开发
 }
 
 为了区分阶段，我将整个流程分为startTask、dealTask、endTask，大家可以根据需求自行调整，主要代码是FlowUtils这个类，而FlowFrame原理就是从json文件中读取预定义的json数据然后调用FlowUtils操作流程，部署就不说了，直接看finishWork()这个方法：
-		```Task task = taskService.createTaskQuery().processInstanceId(processId).taskCandidateGroup(currentRole).singleResult();//首先查询当前流程实例下该角色是否有任务，有任务肯定也是唯一的
+		```Java
+		Task task = taskService.createTaskQuery().processInstanceId(processId).taskCandidateGroup(currentRole).singleResult();//首先查询当前流程实例下该角色是否有任务，有任务肯定也是唯一的
 		        if(task!=null){
 	    		 String [] candidateUsers={nextRole};//流程图中可以看出开始任务后有两个选择，根据前端传入的条件我们可以从activitit.json中找到下一节点的处理角色nextRole以及节点ID nextNodeId
 	    		 taskService.setVariable(task.getId(), nextNodeId,  Arrays.asList(candidateUsers));//然后通过以上两行代码设置进去，roleDeal1可以包括处理角色1,你还可以将处理角色1a放进roleDeal1，这样是为了方便扩展角色
@@ -34,7 +35,8 @@ activiti 后台可配置开发
         }```
 这个方法无论哪个节点完成任务都可以使用，那么在下一节点开始任务的时候怎么做呢？
 我们再看FlowFrame中的dealTask方法：
-       ```public void dealTask(String condition , String processId){
+       ```Java
+       public void dealTask(String condition , String processId){
     	   String group_id_ = flowUtils.selectGroupId(processId);//首先通过selectGroupId方法调用mybaits去查询这样一个语句：SELECT group_id_ FROM ACT_RU_TASK t JOIN ACT_RU_IDENTITYLINK i ON t.id_ = i.task_id_ WHERE 
            t.proc_inst_id_=#{nm_processId} ,就是上一节点处理完之后设定的下一处理角色可以通过这个方法找到，然后下面就是重复finishWork()的方法
     	   //处理任务
@@ -59,11 +61,12 @@ activiti 后台可配置开发
     	   flowUtils.finishWork(processId, currentRole, nextRole, nextNodeId,conditionMap);
        }```	
 至于最后的endTask就更简单了，原理大同小异，主要看flow包下的两个类，activiti.json和流程图的对应关系就可以了，其余的都是mybaits对数据库的操作，虽然我只设置了一个数据源，但是项目里面可以设置多数据源，有兴趣可以在网上看下配置下就可以了，而在项目里面只要在jdbc.properties和activiti.cfg.xml配置154数据源的相关信息就可以了，然后直接运行JunitTest的testFlowFrame方法。
+    ```Java
     @Test
     public void testFlowFrame(){
     	flowFrame.deploymentProcess();
 //    	flowFrame.startTask("102102");
 //    	flowFrame.dealTask("102204", "12501");
 //    	flowFrame.endTask("102303", "12501");
-    }
+    }```
 从上到下就是一个完整的部署、开始、处理、结束的流程
