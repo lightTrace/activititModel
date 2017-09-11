@@ -1,0 +1,18 @@
+{  
+   "deployProcess":{
+   "name":"activiti流程示例",
+   "bpmnPath":"cn/com/wavenet/activiti/diagrams/activitiExample.bpmn",
+   "pngPath":"cn/com/wavenet/activiti/diagrams/activitiExample.png"
+   },
+   "processDefinitionKey":"myProcess",
+   "startTask":{
+   "currentRole":"roleStart",
+   "startNextArr":["102101,处理角色1,roleDeal1","102102,处理角色2,roleDeal2"]
+   },
+   "dealTask":{
+   "dealNextArr":["102201,处理角色3,roleDeal3","102202,处理角色4,roleDeal4","102203,结案角色,roleEnd","102204,结案角色,roleEnd"]
+   },
+   "endTask":{
+   "endNextArr":["102301,处理角色5,roleDeal5","102302,处理角色6,roleDeal6","102303"]
+   }    
+}

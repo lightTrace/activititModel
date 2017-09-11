@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+         
+<mapper namespace="cn.com.wavenet.dao.IBasicDao">
+
+    <!-- 根据条件复杂查询交叉表 -->
+  	<select id="findCross" resultType="java.util.Map" parameterType="java.util.Map">
+  	       with tall as (select ${filedMain} from ${tableNameMain} <where>
+  	        <foreach collection="keys" item="k" index="index" open="" separator="and" close="">  	   
+  	            ${k} = '${paramsMain[k]}'
+            </foreach>
+            <if test="inKeyMain!=null and inKeyMain !=''" >
+              AND ${inKeyMain} IN(
+              ${inValuesMain}
+  	         )</if></where>),
+  	       tflow as (select ${pkeyFlow} nm_flow_sid,${filedFlow} 
+  	       from ${tableNameFlow}
+  	       <where>
+  	       <if test="inKeyFlow!=null and inKeyFlow !=''" >
+  	          AND ${inKeyFlow} IN (${inValuesFlow})
+               group by ${pkeyFlow}
+           </if>
+  	       </where>),
+  	       tresult as (select * from tall ,tflow <where> tall.${pkeyMain}=nm_flow_sid(+)</where>) select tresult.*
+  	       <if test="extendSqlMain!=null and extendSqlMain !=''" >
+  	       ,${extendSqlMain} 
+  	       </if>
+  	       from tresult
+        <if test="orderMain!=null and orderMain !=''" >    
+          order by ${orderMain} 
+        </if>
+    </select>
+        <!-- 根据条件复杂查询交叉表并分页 -->
+  	<select id="findCrossByPage" resultType="java.util.Map" parameterType="java.util.Map">
+  	       with tall as (select ${filedMain} from ${tableNameMain} <where>
+  	        <foreach collection="keys" item="k" index="index" open="" separator="and" close="">  	   
+  	            ${k} = '${paramsMain[k]}'
+            </foreach>
+            <if test="inKeyMain!=null and inKeyMain !=''" >    
+              AND ${inKeyMain} IN(
+              ${inValuesMain}
+  	         )</if></where>),
+  	       tflow as (select ${pkeyFlow} nm_flow_sid,${filedFlow} 
+  	       from ${tableNameFlow}
+  	       <where>
+  	       <if test="inKeyFlow!=null and inKeyFlow !=''" >    
+  	          AND ${inKeyFlow} IN (${inValuesFlow})
+               group by ${pkeyFlow}
+           </if>
+  	       </where>),
+  	       tresult as (select * from tall ,tflow <where> tall.${pkeyMain}=nm_flow_sid(+)</where>) select tresult.*,${extendSqlMain} from tresult
+        <if test="orderMain!=null and orderMain !=''" >    
+          order by ${orderMain} 
+        </if>
+    </select>
+    <!-- 根据复杂条件查询 -->
+  	<select id="find" resultType="java.util.Map" parameterType="java.util.Map">
+  	        SELECT ${columns} FROM ${tableName} 
+  	        <where>
+  	        <if test="params !=null and params != ''">
+  	        <foreach collection="keys" item="k" index="index" open="" separator="and" close="">  	   
+  	            ${k} ${paramsSign[k]} '${params[k]}'
+            </foreach>  
+            </if>
+            <if test="paramsIsNull !=null and paramsIsNull != ''">
+  	        <foreach collection="keysIsNull" item="k" index="index" open="" separator="and" close="">  	   
+  	          AND ${k} IS ${paramsIsNull[k]}
+            </foreach>  
+            </if>
+            <if test = "inKey !=null and inKey !=''">
+              AND ${inKey} IN
+             <foreach collection="inValues" item="item" index="index"  open="(" separator="," close=")">  
+		      #{item}  
+		     </foreach> 
+            </if>
+              </where>
+         <if test="order!=null and order !=''" >    
+        order by #{order} 
+        </if>
+
+    </select>
+    <!-- 根据条件复杂分页查询 -->
+  <select id="findByPage" resultType="java.util.Map" parameterType="java.util.Map">
+  	        SELECT ${columns} FROM ${tableName} 
+  	        <where>
+  	        <if test="params !=null and params != ''">
+  	        <foreach collection="keys" item="k" index="index" open="" separator="and" close="">  	   
+  	            ${k} ${paramsSign[k]} '${params[k]}'
+            </foreach>  
+            </if>
+            <if test="paramsIsNull !=null and paramsIsNull != ''">
+  	        <foreach collection="keysIsNull" item="k" index="index" open="" separator="and" close="">  	   
+  	          AND ${k} IS ${paramsIsNull[k]}
+            </foreach>  
+            </if>
+            <if test = "inKey !=null and inKey !=''">
+              AND ${inKey} IN
+             <foreach collection="inValues" item="item" index="index"  open="(" separator="," close=")">  
+		      #{item}  
+		     </foreach> 
+            </if>
+              </where>
+         <if test="order!=null and order !=''" >    
+        order by #{order} 
+        </if>
+    </select>
+    
+     <!-- 插入数据到指定表名 --> 
+  	<insert id="insert" parameterType="java.util.Map" >  	
+  	<trim suffix="" suffixOverrides=",">
+        insert into ${tablename}
+        <foreach collection="keys" item="k" index="index" open="(" separator="," close=")">
+            ${k}
+        </foreach>
+        values
+        <foreach collection="keys" item="k" index="index" open="(" separator="," close=")">
+            '${params[k]}'
+        </foreach>
+        </trim>
+    </insert>
+    
+    <!-- 批量插入数据 -->
+    <insert id="insertBatch" parameterType="java.util.Map" >  	
+  	<trim suffix="" suffixOverrides=",">
+        insert into ${tablename}
+        <foreach collection="keys" item="k" index="index" open="(" separator="," close=")">
+            ${k}
+        </foreach>
+           values
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            '${item}'
+        </foreach>
+        </trim>
+    </insert>
+    <!-- 删除数据 -->
+    <delete id="delete" parameterType = "java.util.Map">
+       delete from ${tablename} <where>
+       <foreach collection="keys" item="k" index="index" open="" separator="and" close="">  	   
+  	            ${k} = '${params[k]}'
+       </foreach>  
+         <if test = "inKey !=null and inKey !=''">
+              AND ${inKey} IN
+             <foreach collection="inValues" item="item" index="index"  open="(" separator="," close=")">  
+		      #{item}  
+		     </foreach> 
+            </if>
+       </where>
+    </delete>
+    <!-- 更新数据 -->
+    <update id="update" parameterType = "java.util.Map">
+     update ${tablename} 
+        <set>
+        <foreach collection="keys" item="k" index="index" open="" separator="," close="">
+            ${k}='${params[k]}'
+        </foreach>
+        </set>
+        <where>
+        <foreach collection="keys2" item="j" index="index" open="" separator="and" close="">
+            ${j}='${params2[j]}'
+        </foreach>
+         <if test = "inKey !=null and inKey !=''">
+              AND ${inKey} IN
+             <foreach collection="inValues" item="item" index="index"  open="(" separator="," close=")">  
+		      #{item}  
+		     </foreach> 
+            </if>
+       </where>
+    </update>
+     <!-- 调用函数(调用里程桩实例)-->
+    <select id="F_GETLCZ" parameterType="java.util.Map" statementType="CALLABLE" >
+        {#{return_obj,mode=OUT,jdbcType=VARCHAR} = call pack_gps.F_GETLCZ(#{x,mode=IN,jdbcType=DOUBLE},#{y,mode=IN,jdbcType=DOUBLE})}
+    </select>
+    <resultMap type="java.util.Map" id="mapResult">
+	</resultMap>
+    <!-- 调用getTableFiled存储过程 -->
+    <select id ="call_p_info_getTableField" parameterType= "Map" statementType="CALLABLE" >  
+           <!--注明statementType="CALLABLE"表示调用存储过程-->  
+     <![CDATA[ 
+     {call pack_sys.p_info_getTableField( 
+     #{v_cursor,jdbcType=CURSOR, javaType=ResultSet, resultMap=mapResult, mode=OUT},${spid},${sshowfiled})}  
+     ]]>
+    </select > 
+    <!-- 调用p_sys_GetCrossResult存储过程 -->
+    <select id ="call_p_info_GetCrossResult" parameterType= "Map" statementType="CALLABLE" >  
+           <!--注明statementType="CALLABLE"表示调用存储过程-->  
+     <![CDATA[ 
+     {call pack_sys.p_sys_GetCrossResult( 
+     #{v_cursor,jdbcType=CURSOR, javaType=ResultSet, resultMap=mapResult, mode=OUT},${sMainfk},${sFlowfk},${strMainSql},${strFlowSql1},${sOrder})}  
+     ]]>
+    </select > 
+    <!-- 返回最大值 -->
+      <select id = "getMaxValue" resultType = "java.lang.String" parameterType = "java.lang.String">
+        SELECT ${tablefield} FROM ${tableName} WHERE ${tablefield} LIKE #{ST_REPORTNO}
+    </select> 
+    <!-- 用sql查询 -->
+     <select id="findBySql" resultType="java.util.Map" parameterType="String">
+  	          ${value}
+    </select>
+    
+        <!-- 用sql查询 -->
+     <select id="findBySqlByPage" resultType="java.util.Map" parameterType="java.util.Map">
+  	          ${sql}
+    </select>
+         <!-- 获取自增序列-->
+     <select id="getSequenceId" resultType="java.lang.Integer" parameterType="java.util.Map">
+                SELECT ${SEQ}.NEXTVAL FROM DUAL     
+    </select>
+        <!-- 得到表的所有列名 -->
+    <select id="findAllColumn" resultType = "java.util.Map" parameterType = "java.util.Map">           
+            select   COLUMN_NAME ,DATA_TYPE   from   cols    WHERE   TABLE_name = #{tableName}
+            <if test="field !=null and field != ''">
+              and COLUMN_NAME in 
+              <foreach collection="field" item="item" index="index"  open="(" separator="," close=")">  
+		      #{item}  
+		     </foreach> 
+            </if>
+    </select>    
+ </mapper>
