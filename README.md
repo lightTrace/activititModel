@@ -27,11 +27,11 @@ activiti 后台可配置开发
 
 为了区分阶段，我将整个流程分为startTask、dealTask、endTask，大家可以根据需求自行调整，主要代码是FlowUtils这个类，而FlowFrame原理就是从json文件中读取预定义的json数据然后调用FlowUtils操作流程，部署就不说了，直接看finishWork()这个方法：
 		```Java
-		Task task = taskService.createTaskQuery().processInstanceId(processId).taskCandidateGroup(currentRole).singleResult();//首先查询当前流程实例下该角色是否有任务，有任务肯定也是唯一的
-		        if(task!=null){
-	    		 String [] candidateUsers={nextRole};//流程图中可以看出开始任务后有两个选择，根据前端传入的条件我们可以从activitit.json中找到下一节点的处理角色nextRole以及节点ID nextNodeId
-	    		 taskService.setVariable(task.getId(), nextNodeId,  Arrays.asList(candidateUsers));//然后通过以上两行代码设置进去，roleDeal1可以包括处理角色1,你还可以将处理角色1a放进roleDeal1，这样是为了方便扩展角色
-				 taskService.complete(task.getId(),conditionMap);//最后完成任务					           
+		Task task = taskService.createTaskQuery().processInstanceId(processId).taskCandidateGroup(currentRole).singleResult();//首先查询当前流程实例下该角色是否有任务，有任务肯定也是唯一的<br>
+		         if(task!=null){<br>
+	    		 String [] candidateUsers={nextRole};//流程图中可以看出开始任务后有两个选择，根据前端传入的条件我们可以从activitit.json中找到下一节点的处理角色nextRole以及节点ID nextNodeId<br>
+	    		 taskService.setVariable(task.getId(), nextNodeId,  Arrays.asList(candidateUsers));//然后通过以上两行代码设置进去，roleDeal1可以包括处理角色1,你还可以将处理角色1a放进roleDeal1，这样是为了方便扩展角色<br>
+				 taskService.complete(task.getId(),conditionMap);//最后完成任务<br>				           
         }```
 这个方法无论哪个节点完成任务都可以使用，那么在下一节点开始任务的时候怎么做呢？
 我们再看FlowFrame中的dealTask方法：
