@@ -19,8 +19,8 @@ public class JunitTest {
 
     @Test
     public void testFlowFrame(){
-    	flowFrame.deploymentProcess();
-//    	flowFrame.startTask("102102");
+//    	flowFrame.deploymentProcess();
+    	flowFrame.startTask("102102");
 //    	flowFrame.dealTask("102204", "12501");
 //    	flowFrame.endTask("102303", "12501");
     }
